@@ -105,6 +105,13 @@ async def lifespan(app: FastAPI):
         # 2. 关闭批量保存任务并刷新数据
         await token_manager.shutdown()
         logger.info("[Token] Token管理器已关闭")
+
+        # 2.5 刷新统计与日志，降低关停时数据丢失窗口
+        from app.services.request_stats import request_stats
+        from app.services.request_logger import request_logger
+        await request_stats.flush()
+        await request_logger.flush()
+        logger.info("[Grok2API] 统计与日志已刷新")
         
         # 3. 关闭核心服务
         await storage_manager.close()

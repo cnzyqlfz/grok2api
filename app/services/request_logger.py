@@ -135,6 +135,17 @@ class RequestLogger:
         async with self._lock:
             return list(self._logs)[:limit]
     
+    async def flush(self):
+        """等待未完成的保存任务并确保落盘"""
+        task = self._save_task
+        if task and not task.done():
+            try:
+                await task
+            except Exception as e:
+                logger.warning(f"[Logger] 等待保存任务失败: {e}")
+
+        await self._save_data()
+
     async def clear_logs(self):
         """清空日志"""
         async with self._lock:

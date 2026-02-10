@@ -31,8 +31,10 @@ RUN rm -rf /usr/share/doc/* \
 # 从构建阶段复制已安装的包
 COPY --from=builder /install /usr/local
 
-# 创建必要的目录（包括用于挂载的data目录）
-RUN mkdir -p /app/logs /app/data/temp/image /app/data/temp/video
+# 创建必要目录并准备非 root 运行用户
+RUN mkdir -p /app/logs /app/data/temp/image /app/data/temp/video && \
+  addgroup --system app && adduser --system --ingroup app app && \
+  chown -R app:app /app
 
 # 复制应用代码
 COPY app/ ./app/
@@ -45,6 +47,8 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 # 删除 Python 字节码和缓存
 ENV PYTHONDONTWRITEBYTECODE=1 \
   PYTHONUNBUFFERED=1
+
+USER app
 
 EXPOSE 8000
 

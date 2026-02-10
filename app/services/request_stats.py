@@ -196,6 +196,17 @@ class RequestStats:
             }
         }
     
+    async def flush(self) -> None:
+        """等待未完成的保存任务并确保落盘"""
+        task = self._save_task
+        if task and not task.done():
+            try:
+                await task
+            except Exception as e:
+                logger.warning(f"[Stats] 等待保存任务失败: {e}")
+
+        await self._save_data()
+
     async def reset(self) -> None:
         """重置所有统计"""
         self._hourly.clear()
