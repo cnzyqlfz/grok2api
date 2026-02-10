@@ -61,7 +61,8 @@ class FileStorage(BaseStorage):
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
         if not self.token_file.exists():
-            await self._write(self.token_file, orjson.dumps({"sso": {}, "ssoSuper": {}}, option=orjson.OPT_INDENT_2).decode())
+            # 与 TokenType 枚举保持一致：NORMAL=ssoNormal, SUPER=ssoSuper
+            await self._write(self.token_file, orjson.dumps({"ssoNormal": {}, "ssoSuper": {}}, option=orjson.OPT_INDENT_2).decode())
             logger.info("[Storage] 创建token文件")
 
         if not self.config_file.exists():
@@ -124,7 +125,7 @@ class FileStorage(BaseStorage):
 
     async def load_tokens(self) -> Dict[str, Any]:
         """加载token"""
-        return await self._load_json(self.token_file, {"sso": {}, "ssoSuper": {}}, self._token_lock)
+        return await self._load_json(self.token_file, {"ssoNormal": {}, "ssoSuper": {}}, self._token_lock)
 
     async def save_tokens(self, data: Dict[str, Any]) -> None:
         """保存token"""
@@ -236,7 +237,9 @@ class MysqlStorage(BaseStorage):
     async def _sync_data(self) -> None:
         """同步数据"""
         try:
-            for table, key in [("grok_tokens", "sso"), ("grok_settings", "global")]:
+            for table, key in [("grok_tokens", "ssoNormal"), ("grok_settings", "global")]:
+                # 兼容历史 token 文件中的旧键名 "sso"
+
                 data = await self._load_db(table)
                 if data:
                     if table == "grok_tokens":

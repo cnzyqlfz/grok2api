@@ -87,7 +87,18 @@ class GrokTokenManager:
             if self.token_file.exists():
                 # 使用进程锁读取文件
                 async with self._file_lock:
-                    self.token_data = await asyncio.to_thread(load_sync)
+                    loaded = await asyncio.to_thread(load_sync)
+
+                # 兼容旧键名：sso -> ssoNormal
+                if isinstance(loaded, dict):
+                    if "ssoNormal" not in loaded and "sso" in loaded:
+                        loaded[TokenType.NORMAL.value] = loaded.get("sso", {})
+                    loaded.setdefault(TokenType.NORMAL.value, {})
+                    loaded.setdefault(TokenType.SUPER.value, {})
+                else:
+                    loaded = default
+
+                self.token_data = loaded
             else:
                 self.token_data = default
                 logger.debug("[Token] 创建新数据文件")

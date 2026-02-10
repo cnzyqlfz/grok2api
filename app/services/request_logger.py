@@ -41,6 +41,7 @@ class RequestLogger:
         self._logs: Deque[Dict] = deque(maxlen=max_len)
         self._lock = asyncio.Lock()
         self._loaded = False
+        self._save_task = None
         
         self._initialized = True
 
@@ -121,8 +122,10 @@ class RequestLogger:
             async with self._lock:
                 self._logs.appendleft(log) # 最新的在前
                 
-            # 异步保存
-            asyncio.create_task(self._save_data())
+            # 合并保存任务，避免高并发下创建过多后台任务
+            if self._save_task and not self._save_task.done():
+                return
+            self._save_task = asyncio.create_task(self._save_data())
                 
         except Exception as e:
             logger.error(f"[Logger] 记录日志失败: {e}")

@@ -38,6 +38,7 @@ class RequestStats:
         
         self._lock = asyncio.Lock()
         self._loaded = False
+        self._save_task = None
         self._initialized = True
 
     async def init(self):
@@ -125,8 +126,10 @@ class RequestStats:
         # 定期清理旧数据
         self._cleanup()
         
-        # 异步保存
-        asyncio.create_task(self._save_data())
+        # 合并保存任务，避免高并发下创建过多后台任务
+        if self._save_task and not self._save_task.done():
+            return
+        self._save_task = asyncio.create_task(self._save_data())
     
     def _cleanup(self) -> None:
         """清理过期数据"""
