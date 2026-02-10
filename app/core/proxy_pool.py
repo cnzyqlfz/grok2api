@@ -155,8 +155,13 @@ class ProxyPool:
 
     def _looks_like_proxy_url(self, url: str) -> bool:
         """判断URL是否像代理地址（避免误把代理池API当代理）"""
-        return url.startswith(("sock5://", "sock5h://", "socks5://", "socks5h://"))
+        return url.startswith(("http://", "https://", "sock5://", "sock5h://", "socks5://", "socks5h://"))
     
+    @property
+    def enabled(self) -> bool:
+        """代理池是否启用（只读）"""
+        return self._enabled
+
     def get_current_proxy(self) -> Optional[str]:
         """获取当前使用的代理（同步方法）
         

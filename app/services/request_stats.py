@@ -71,8 +71,10 @@ class RequestStats:
                     self._models = defaultdict(int)
                     self._models.update(data.get("models", {}))
                     
-                    self._loaded = True
                     logger.debug(f"[Stats] 加载统计数据成功")
+
+                # 即使文件为空也视为已完成初始化，避免重复读取
+                self._loaded = True
         except Exception as e:
             logger.error(f"[Stats] 加载数据失败: {e}")
             self._loaded = True # 防止覆盖

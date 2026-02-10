@@ -67,8 +67,10 @@ class RequestLogger:
                     if isinstance(data, list):
                         self._logs.clear()
                         self._logs.extend(data)
-                    self._loaded = True
                     logger.debug(f"[Logger] 加载日志成功: {len(self._logs)} 条")
+
+                # 即使文件为空也视为已完成初始化，避免重复读取
+                self._loaded = True
         except Exception as e:
             logger.error(f"[Logger] 加载日志失败: {e}")
             self._loaded = True

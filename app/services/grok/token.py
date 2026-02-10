@@ -384,7 +384,7 @@ class GrokTokenManager:
                     from app.core.proxy_pool import proxy_pool
                     
                     # 如果是403重试且使用代理池，强制刷新代理
-                    if retry_403_count > 0 and proxy_pool._enabled:
+                    if retry_403_count > 0 and proxy_pool.enabled:
                         logger.info(f"[Token] 403重试 {retry_403_count}/{max_403_retries}，刷新代理...")
                         proxy = await proxy_pool.force_refresh()
                     else:
@@ -403,7 +403,7 @@ class GrokTokenManager:
                         )
 
                         # 内层403重试：仅当有代理池时触发
-                        if response.status_code == 403 and proxy_pool._enabled:
+                        if response.status_code == 403 and proxy_pool.enabled:
                             retry_403_count += 1
                             
                             if retry_403_count <= max_403_retries:
