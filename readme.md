@@ -1,10 +1,10 @@
 # Grok2API
 
-基于 **FastAPI** 重构的 Grok2API，全面适配最新 Web 调用格式，支持流式对话、图像生成、图像编辑、联网搜索、深度思考，号池并发与自动负载均衡一体化。
+基于 **FastAPI** 的 Grok2API，适配最新 Web 调用格式，支持流式对话、图像生成、图像编辑、联网搜索、深度思考，集成号池并发与自动负载均衡。
 
-## 🆕 Fork 增强功能
+## ✨ 核心功能
 
-本 Fork 在原版基础上新增以下功能：
+当前版本提供以下能力：
 
 - **多 Key 管理与持久化**：支持管理员批量创建、备注、删除 API Key，支持多选批量操作。所有密钥均实现持久化存储，重启不丢失。
 - **日志审计支持**：实时记录请求细节，且日志数据支持文件持久化存储。
@@ -76,7 +76,7 @@ curl https://你的服务器地址/v1/chat/completions \
 
 ### 方式一：Docker Compose（推荐）
 
-由于本项目包含修改，建议直接构建运行：
+建议直接本地构建运行：
 
 1. 克隆本仓库
 ```bash
@@ -116,7 +116,7 @@ volumes:
 
 ### 方式二：Python 直接运行
 
-**前置要求**：Python 3.10+，建议使用 `uv` 包管理器
+**前置要求**：Python 3.11+，建议使用 `uv` 包管理器
 
 1. 安装 uv
 ```bash
@@ -240,7 +240,3 @@ uv run python main.py
 ## ⚠️ 注意事项
 
 本项目仅供学习与研究，请遵守相关使用条款！
-
-<br>
-
-> 本项目基于以下项目学习重构，特别感谢：[LINUX DO](https://linux.do)、[VeroFess/grok2api](https://github.com/VeroFess/grok2api)、[xLmiler/grok2api_python](https://github.com/xLmiler/grok2api_python)
